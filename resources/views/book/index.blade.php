@@ -26,6 +26,10 @@
         </div>
         <br>
         <div>
+            <label>Fecha de vencimiento del libro</label>
+            <input type="date" name="due_date" required>
+        </div>
+        <div>
             <label>Genero del libro</label>
             <select name="gender">
                 <option value="">Seleccinar</option>
@@ -66,7 +70,7 @@
                 <th>Titulo</th>
                 <th>Cantidad</th>
                 <th>Genero</th>
-                <th>------</th>
+                <th>Fecha</th>
                 <th>Accion</th>
                 <th>Accion</th>
             </tr>
@@ -78,7 +82,7 @@
                     <th>{{$book->title}}</th>
                     <th>{{$book->count}}</th>
                     <th>{{$book->gender}}</th>
-                    <th>--------</th>
+                    <th>{{$book->due_date}}</th>
                     <th><a href="{{ route('book.edit', $book->id) }}">Editar</a></th>
                     <th><a href="{{ route('book.delete', $book->id) }}">Eliminar</a></th>
                 </tr>

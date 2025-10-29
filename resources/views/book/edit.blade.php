@@ -27,6 +27,10 @@
         </div>
         <br>
         <div>
+            <label>Fecha de vencimiento del libro</label>
+            <input type="date" name="due_date" required>
+        </div>
+        <div>
             <label>Genero del libro</label>
             <select name="gender">
                 <option value="">Seleccinar</option>

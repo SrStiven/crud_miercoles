@@ -19,7 +19,8 @@ class BooksSeeder extends Seeder
                 'name' => $faker->name,
                 'title' => $faker->sentence(3),
                 'count' => $faker->numberBetween(0,100),
-                'gender' => $faker->randomElement(['ficcion', 'comedia', 'accion'])
+                'gender' => $faker->randomElement(['ficcion', 'comedia', 'accion']),
+                'due_date' => $faker->date(),
             ]);
         }
     }
