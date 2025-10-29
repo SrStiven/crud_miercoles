@@ -24,7 +24,7 @@
         <br>
         <div class="form-group">
             <label>Fecha de vencimiento del libro</label>
-            <input type="date" name="due_date" required>
+            <input type="date" name="due_date" required value="{{ $book->due_date }}">
         </div>
         <div class="form-group">
             <label>Genero del libro</label>
