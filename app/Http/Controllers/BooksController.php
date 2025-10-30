@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\BooksExport;
+use App\Http\Requests\BooksRequest;
 use App\Imports\BooksImport;
 use App\Mail\InfoNotificationMail;
 use App\Models\Books;
@@ -19,68 +20,38 @@ class BooksController extends Controller
 
         return view('book.index', compact('books'));
     }
-public function create(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string',
-        'title' => 'required|string',
-        'count' => 'required|integer',
-        'gender' => 'required|string',
-        'due_date' => 'required|date',
-        'file' => 'required|mimes:pdf,doc,docx|max:2048',
-    ]);
-
-    // Guardar archivo
-    $filePath = $request->file('file')->store('books', 'public');
-
-    // Crear registro
-    Books::create([
-        'name' => $request->name,
-        'title' => $request->title,
-        'count' => $request->count,
-        'gender' => $request->gender,
-        'due_date' => $request->due_date,
-        'file_path' => $filePath,
-    ]);
-
-    return redirect()->route('book.index')->with('success', 'Libro creado con éxito.');
-}
-
-
-    public function update(Request $request)
+        public function create(BooksRequest $request)
     {
-        $request->validate([
-            'id' => 'required|exists:books,id',
-            'name' => 'required|string',
-            'title' => 'required|string',
-            'count' => 'required|integer',
-            'gender' => 'required|string',
-            'due_date' => 'required|date',
-            'file' => 'nullable|mimes:pdf,doc,docx|max:2048',
-        ]);
+        $filepath = $request->file('file')->store('books', 'public');
 
-        $book = Books::findOrFail($request->id);
+        $data = $request->validated();
+        $data['file_path'] = $filepath;
+
+        Books::create($data);
+
+        return back()->with('success', 'Libro creado correctamente.');
+    }
+
+    public function update(BooksRequest $request)
+    {
+        $book = Books::findOrFail($request -> id);
 
         if ($request->hasFile('file')) {
             if ($book->file_path && Storage::disk('public')->exists($book->file_path)) {
                 Storage::disk('public')->delete($book->file_path);
             }
-
-            $filePath = $request->file('file')->store('books', 'public');
-            $book->file_path = $filePath;
+            $book->file_path = $request->file('file')->store('books', 'public');
         }
 
         $book->update([
-            'name' => $request->name,
-            'title' => $request->title,
-            'count' => $request->count,
-            'gender' => $request->gender,
-            'due_date' => $request->due_date,
+            ...$request->validated(),
             'file_path' => $book->file_path,
         ]);
 
-        return redirect()->route('book.index')->with('success', 'Libro actualizado correctamente.');
+        return redirect()->route('book.index');
     }
+
+
 
 
     public function edit(Books $book){

@@ -4,8 +4,9 @@
     <div class="mx-auto" style="width:200px">
         <h2>Crear libros</h2>
     </div>
-    <form action="{{ route('book.update') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('book.update', $book->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
+        @method('PUT')
         <input type="hidden" hidden="id" name="id" value="{{ $book->id }}">
         <div class="form-group">
             <label> Nombre del autor</label>
