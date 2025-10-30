@@ -6,7 +6,7 @@
             <h2>Crear libros</h2>
         </div>
         
-        <form action="{{ route('book.create') }}" method="POST">
+        <form action="{{ route('book.create') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="form-group">
             <label> Nombre del autor</label>
@@ -32,6 +32,10 @@
                 <option value="comedia">Comedia</option>
                 <option value="ficcion">Ficcion</option>
             </select>
+        </div>
+        <div class="form-group">
+            <label>Archivo pdf o word</label>
+            <input type="file" name="file" accept=".pdf,.doc,.docx" required>
         </div>
         <button type="submit">Enviar</button>
     </form>
@@ -77,6 +81,7 @@
                 <th>Cantidad</th>
                 <th>Genero</th>
                 <th>Fecha</th>
+                <th>Archivo</th>
                 <th>Accion</th>
                 <th>Accion</th>
             </tr>
@@ -89,6 +94,14 @@
                     <th>{{$book->count}}</th>
                     <th>{{$book->gender}}</th>
                     <th>{{$book->due_date}}</th>
+                    <th>
+                        @if ($book->file_path)
+
+                        <a href="{{ asset('storage/' .  $book->file_path) }}" target="_blank"> Ver archivo</a>
+                        @else
+                        <span>Sin archivo</span>    
+                        @endif
+                    </th>
                     <th><a href="{{ route('book.edit', $book->id) }}">Editar</a></th>
                     <th><a href="{{ route('book.delete', $book->id) }}">Eliminar</a></th>
                 </tr>

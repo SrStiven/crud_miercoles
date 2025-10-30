@@ -9,6 +9,7 @@ use App\Models\Books;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage; 
 
 class BooksController extends Controller
 {
@@ -16,53 +17,90 @@ class BooksController extends Controller
 
         $books = Books::all();
 
-        return view('book.index',['books'=>$books]);
+        return view('book.index', compact('books'));
+    }
+public function create(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string',
+        'title' => 'required|string',
+        'count' => 'required|integer',
+        'gender' => 'required|string',
+        'due_date' => 'required|date',
+        'file' => 'required|mimes:pdf,doc,docx|max:2048',
+    ]);
+
+    // Guardar archivo
+    $filePath = $request->file('file')->store('books', 'public');
+
+    // Crear registro
+    Books::create([
+        'name' => $request->name,
+        'title' => $request->title,
+        'count' => $request->count,
+        'gender' => $request->gender,
+        'due_date' => $request->due_date,
+        'file_path' => $filePath,
+    ]);
+
+    return redirect()->route('book.index')->with('success', 'Libro creado con éxito.');
+}
+
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:books,id',
+            'name' => 'required|string',
+            'title' => 'required|string',
+            'count' => 'required|integer',
+            'gender' => 'required|string',
+            'due_date' => 'required|date',
+            'file' => 'nullable|mimes:pdf,doc,docx|max:2048',
+        ]);
+
+        $book = Books::findOrFail($request->id);
+
+        if ($request->hasFile('file')) {
+            if ($book->file_path && Storage::disk('public')->exists($book->file_path)) {
+                Storage::disk('public')->delete($book->file_path);
+            }
+
+            $filePath = $request->file('file')->store('books', 'public');
+            $book->file_path = $filePath;
+        }
+
+        $book->update([
+            'name' => $request->name,
+            'title' => $request->title,
+            'count' => $request->count,
+            'gender' => $request->gender,
+            'due_date' => $request->due_date,
+            'file_path' => $book->file_path,
+        ]);
+
+        return redirect()->route('book.index')->with('success', 'Libro actualizado correctamente.');
     }
 
-    public function create(Request $request){
 
-        $book = new Books();
+    public function edit(Books $book){
 
-        $book->fill($request->all());
-
-        $book->save();
-
-        return redirect(route('book.index'));
+        return view('book.edit',compact('book'));
 
     }
 
-    public function update(Request $request){
+    public function delete(Books $book){
 
-        $book = Books::find($request -> id);
+        $book->delete();
 
-        $book->fill($request->all());
-
-        $book->save();
-
-        return redirect(route('book.index'));
-        
-    }
-
-    public function edit($id){
-
-        $book = Books::find($id);
-
-        return view('book.edit',['book'=>$book]);
-
-    }
-
-    public function delete($id){
-
-        $book = Books::destroy($id);
-
-        return redirect(route('book.index'));
+        return back();
     }
 
     public function destroy(){
 
         Books::truncate();
 
-        return redirect(route('book.index'));
+        return back();
     }
 
     public function exportExcel(){
@@ -81,6 +119,6 @@ class BooksController extends Controller
 
         Mail::to('minuevocelular8@gmail.com')->send(new InfoNotificationMail($mensaje));
 
-        return redirect(route('book.index'))->with('success', 'los libros se cargaron correctamente');
+        return back()->with('success', 'los libros se cargaron correctamente');
     }
 }

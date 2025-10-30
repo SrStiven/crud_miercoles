@@ -9,9 +9,9 @@ Route::post('/guardar',[BooksController::class,'create'])->name('book.create');
 
 Route::post('/actualizar',[BooksController::class,'update'])->name('book.update');
 
-Route::get('/editar/{id}',[BooksController::class,'edit'])->name('book.edit');
+Route::get('/editar/{book}',[BooksController::class,'edit'])->name('book.edit');
 
-Route::get('/eliminar/{id}',[BooksController::class,'delete'])->name('book.delete');
+Route::get('/eliminar/{book}',[BooksController::class,'delete'])->name('book.delete');
 
 //ELiminar todos los libros
 

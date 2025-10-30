@@ -4,7 +4,7 @@
     <div class="mx-auto" style="width:200px">
         <h2>Crear libros</h2>
     </div>
-    <form action="{{ route('book.update') }}" method="POST">
+    <form action="{{ route('book.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" hidden="id" name="id" value="{{ $book->id }}">
         <div class="form-group">
@@ -25,6 +25,16 @@
         <div class="form-group">
             <label>Fecha de vencimiento del libro</label>
             <input type="date" name="due_date" required value="{{ $book->due_date }}">
+        </div>
+        <div class="form-group">
+            <label>Archivo actual:</label>
+            @if ($book->file_path)
+                <a href="{{ asset('storage/' . $book->file_path) }}" target="_blank">Ver archivo</a>
+            @else
+                <span>No hay archivo</span>
+            @endif
+            <label>Subir nuevo archivo (opcional):</label>
+            <input type="file" name="file" accept=".pdf,.doc,.docx">
         </div>
         <div class="form-group">
             <label>Genero del libro</label>

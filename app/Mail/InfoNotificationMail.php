@@ -26,4 +26,6 @@ class InfoNotificationMail extends Mailable
 
         $this->subject('Los libros se enviaron correctamente')->view('email.notification');
     }
+
+    
 }
